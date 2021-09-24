@@ -86,7 +86,7 @@ public class LinkTargetIDList extends LinkedList<ItemID> implements Serializable
 
 	public String buildPath()
 	{
-		var path = new StringBuilder();
+	  StringBuilder path = new StringBuilder();
 		for (ItemID i : this) {
 			if (i.getType() == ItemID.TYPE_DRIVE || i.getType() == ItemID.TYPE_DRIVE_OLD)
 				path.append(i.getName());

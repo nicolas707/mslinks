@@ -14,13 +14,12 @@
 */
 package mslinks.data;
 
-import io.ByteReader;
-import io.ByteWriter;
-
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
+import io.ByteReader;
+import io.ByteWriter;
 import mslinks.Serializable;
 
 public class Filetime extends GregorianCalendar implements Serializable {
@@ -53,7 +52,7 @@ public class Filetime extends GregorianCalendar implements Serializable {
 		if (!super.equals(o))
 			return false;
 
-		var obj = (Filetime)o;
+		Filetime obj = (Filetime)o;
 		return residue == obj.residue;
 	}
 

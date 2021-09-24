@@ -112,7 +112,7 @@ public class ShellLinkHelper {
 	 */
 	public ShellLinkHelper setLocalTarget(String drive, String absolutePath, Options options) throws ShellLinkException {
 		link.getHeader().getLinkFlags().setHasLinkTargetIDList();
-		var idList = link.createTargetIdList();
+		LinkTargetIDList idList = link.createTargetIdList();
 		idList.add(new ItemID().setType(ItemID.TYPE_CLSID)); // this computer - the only supported class id so far
 		idList.add(new ItemID().setType(ItemID.TYPE_DRIVE).setName(drive));
 
@@ -179,7 +179,7 @@ public class ShellLinkHelper {
 	public static ShellLinkHelper createLink(String target, String linkpath) throws IOException, ShellLinkException {
 		target = resolveEnvVariables(target);
 		
-		var helper = new ShellLinkHelper(new ShellLink());
+		ShellLinkHelper helper = new ShellLinkHelper(new ShellLink());
 		if (target.startsWith("\\\\")) {
 			helper.setNetworkTarget(target);
 		} else {
@@ -194,7 +194,7 @@ public class ShellLinkHelper {
 	}
 
 	public static String resolveEnvVariables(String path) {
-		for (var i : env.entrySet()) {
+		for (java.util.Map.Entry<String,String> i : env.entrySet()) {
 			String p = Pattern.quote(i.getKey());
 			String r = i.getValue().replace("\\", "\\\\");
 			path = Pattern.compile("%"+p+"%", Pattern.CASE_INSENSITIVE).matcher(path).replaceAll(r);

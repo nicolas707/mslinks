@@ -31,7 +31,7 @@ public class Examples {
 	public void WindowsExample() throws IOException, ShellLinkException {
 		assumeTrue(isRunningOnWindows());
 
-		var sl = new ShellLink()
+		ShellLink sl = new ShellLink()
 			.setWorkingDir(Paths.get("..").toAbsolutePath().normalize().toString())
 			.setIconLocation("%SystemRoot%\\system32\\SHELL32.dll");
 		sl.getHeader().setIconIndex(128);
@@ -63,7 +63,7 @@ public class Examples {
 		workingDir = workingDir.replace("/mnt/" + driveLetter + "/", driveLetter.toUpperCase() + ":\\").replaceAll("\\/", "\\\\");
 		String linkWorkingDir = workingDir.substring(0, workingDir.lastIndexOf('\\'));
 
-		var sl = new ShellLink()
+		ShellLink sl = new ShellLink()
 			.setWorkingDir(linkWorkingDir)
 			.setIconLocation("%SystemRoot%\\system32\\SHELL32.dll");
 		sl.getHeader().setIconIndex(128);
@@ -82,10 +82,9 @@ public class Examples {
 
 	private String getWslDriveLetter(String path) {
 		path = path.toLowerCase();
-		for (int i = 0; i < 26; ++i) {
-			String letter = Character.toString('a' + i);
-			if (path.startsWith("/mnt/" + letter + "/"))
-				return letter;
+		for(char alphabet = 'a'; alphabet <='z'; alphabet++ ) {
+		  if (path.startsWith("/mnt/" + alphabet + "/"))
+        return String.valueOf(alphabet);
 		}
 		return null;
 	}

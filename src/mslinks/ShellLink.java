@@ -14,9 +14,6 @@
 */
 package mslinks;
 
-import io.ByteReader;
-import io.ByteWriter;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,8 +23,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
-import java.util.Map;
 
+import io.ByteReader;
+import io.ByteWriter;
 import mslinks.data.LinkFlags;
 import mslinks.extra.ConsoleData;
 import mslinks.extra.ConsoleFEData;
@@ -40,6 +38,18 @@ public class ShellLink {
 
 	public static final String VERSION = "1.0.7";
 	
+	private static HashMap<Integer, Class<? extends Serializable>> extraTypes = createMap();
+	private static HashMap<Integer, Class<? extends Serializable>> createMap() {
+	  HashMap<Integer, Class<? extends Serializable>> result = new HashMap<>();
+    result.put(ConsoleData.signature, ConsoleData.class);
+    result.put(ConsoleFEData.signature, ConsoleFEData.class);
+    result.put(Tracker.signature, Tracker.class);
+    result.put(VistaIDList.signature, VistaIDList.class);
+    result.put(EnvironmentVariable.signature, EnvironmentVariable.class);
+    return result;
+	}
+	
+	/*
 	private static HashMap<Integer, Class<? extends Serializable>> extraTypes = new HashMap<>(Map.of(
 		ConsoleData.signature, ConsoleData.class,
 		ConsoleFEData.signature, ConsoleFEData.class,
@@ -47,7 +57,7 @@ public class ShellLink {
 		VistaIDList.signature, VistaIDList.class,
 		EnvironmentVariable.signature, EnvironmentVariable.class
 	));
-	
+	*/
 	
 	private ShellLinkHeader header;
 	private LinkTargetIDList idlist;
@@ -80,7 +90,7 @@ public class ShellLink {
 	}
 	
 	public ShellLink(InputStream in) throws IOException, ShellLinkException {
-		try (var reader = new ByteReader(in)) {
+		try (ByteReader reader = new ByteReader(in)) {
 			parse(reader);
 		}
 	}
@@ -303,7 +313,7 @@ public class ShellLink {
 		if (linkFileSource != null && header.getLinkFlags().hasRelativePath() && relativePath != null) 
 			return linkFileSource.resolveSibling(relativePath).normalize().toString();
 
-		var envBlock = (EnvironmentVariable)extra.get(EnvironmentVariable.signature);
+		EnvironmentVariable envBlock = (EnvironmentVariable)extra.get(EnvironmentVariable.signature);
 		if (envBlock != null && !envBlock.getVariable().isEmpty())
 			return envBlock.getVariable();
 		
@@ -323,47 +333,6 @@ public class ShellLink {
 			}
 		}
 		return block;
-	}
-
-	@Deprecated(since = "1.0.7", forRemoval = true)
-	public ShellLink saveTo(String path) throws IOException {
-		new ShellLinkHelper(this).saveTo(path);
-		return this;
-	}
-
-	/**
-	 * Set path of target file of directory. Function accepts local paths and network paths.
-	 * Environment variables are accepted but resolved here and aren't kept in link.
-	 */
-	@Deprecated(since = "1.0.7", forRemoval = true)
-	public ShellLink setTarget(String target) {
-		target = ShellLinkHelper.resolveEnvVariables(target);
-		String targetAbsPath = Paths.get(target).toAbsolutePath().toString();
-
-		try {
-			var helper = new ShellLinkHelper(new ShellLink());
-			if (targetAbsPath.startsWith("\\\\")) {
-				helper.setNetworkTarget(targetAbsPath);
-			} else {
-				String[] parts = targetAbsPath.split(":");
-				if (parts.length == 2)
-					helper.setLocalTarget(parts[0], parts[1]);
-			}
-		} catch (ShellLinkException e) {}
-		
-		return this;
-	}
-	
-	@Deprecated(since = "1.0.7", forRemoval = true)
-	public static ShellLink createLink(String target) {
-		ShellLink sl = new ShellLink();
-		sl.setTarget( target );
-		return sl;
-	}
-	
-	@Deprecated(since = "1.0.7", forRemoval = true)
-	public static ShellLink createLink(String target, String linkpath) throws IOException {
-		return createLink(target).saveTo(linkpath);
 	}
 	
 
